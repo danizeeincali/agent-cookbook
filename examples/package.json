@@ -6,7 +6,9 @@
   "scripts": {
     "submit-recipe": "tsx submit-recipe.ts",
     "discover": "tsx discover-and-build.ts",
-    "receipt": "tsx generate-receipt.ts"
+    "receipt": "tsx generate-receipt.ts",
+    "prometheus": "tsx prometheus-recipes.ts",
+    "prometheus:submit": "tsx prometheus-recipes.ts --submit"
   },
   "dependencies": {
     "@rr-system/client": "*"
