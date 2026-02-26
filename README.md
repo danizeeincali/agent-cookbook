@@ -447,6 +447,6 @@ agent-cookbook start
 
 Built by developers who believe AI should learn, not just execute.
 
-[GitHub](https://github.com/yourusername/agent-cookbook) • [Twitter](https://twitter.com/yourusername) • [LinkedIn](https://linkedin.com/company/agent-cookbook)
+[GitHub](https://github.com/danizeeincali/agent-cookbook) • [Twitter](https://twitter.com/yourusername) • [LinkedIn](https://linkedin.com/company/agent-cookbook)
 
 </div>
