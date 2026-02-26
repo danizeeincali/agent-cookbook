@@ -1,5 +1,6 @@
 run = "npm install && npm run build && node packages/rr-node/dist/server.js"
 entrypoint = "packages/rr-node/src/server.ts"
+modules = ["nodejs-20", "nix"]
 
 [env]
 NODE_ID = "replit-1"
@@ -9,7 +10,7 @@ DATA_DIR = "./data"
 NODE_ENV = "production"
 
 [nix]
-channel = "stable-24_05"
+channel = "stable-25_05"
 
 [deployment]
 run = ["sh", "-c", "node packages/rr-node/dist/server.js"]
