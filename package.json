@@ -1,0 +1,29 @@
+{
+  "name": "rr-system",
+  "version": "1.0.0",
+  "description": "Recipes & Receipts - Distributed registry for AI coding agents",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "npm run build --workspaces",
+    "test": "npm run test --workspaces",
+    "dev": "npm run dev --workspaces --if-present",
+    "clean": "rm -rf packages/*/dist packages/*/node_modules node_modules"
+  },
+  "keywords": [
+    "recipes",
+    "receipts",
+    "distributed-registry",
+    "ai-agents",
+    "vector-search"
+  ],
+  "author": "R&R System",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "typescript": "^5.3.0",
+    "tsx": "^4.7.0"
+  }
+}

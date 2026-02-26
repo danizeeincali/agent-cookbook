@@ -1,0 +1,144 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://rr-system.dev/schemas/recipe.json",
+  "title": "Recipe",
+  "description": "A structured specification for accomplishing a coding task",
+  "type": "object",
+  "required": ["id", "title", "description", "tags", "embedding", "version", "steps", "created_at"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$",
+      "description": "Content-addressed ID derived from recipe hash"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200,
+      "description": "Human-readable recipe title"
+    },
+    "description": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1000,
+      "description": "Detailed description of what this recipe accomplishes"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z0-9-]+$"
+      },
+      "minItems": 1,
+      "maxItems": 20,
+      "uniqueItems": true,
+      "description": "Searchable tags for categorization"
+    },
+    "embedding": {
+      "type": "array",
+      "items": {
+        "type": "number"
+      },
+      "minItems": 384,
+      "maxItems": 384,
+      "description": "Vector embedding (384-dim for AllMiniLmL6V2)"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Semantic version"
+    },
+    "steps": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/RecipeStep"
+      },
+      "minItems": 1,
+      "description": "Ordered list of executable steps"
+    },
+    "receipt_summary": {
+      "$ref": "#/$defs/ReceiptSummary",
+      "description": "Aggregated receipt data for the entire recipe"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp"
+    }
+  },
+  "$defs": {
+    "RecipeStep": {
+      "type": "object",
+      "required": ["step_id", "index", "title", "spec", "inputs", "outputs"],
+      "properties": {
+        "step_id": {
+          "type": "string",
+          "pattern": "^sha256:[a-f0-9]{64}$",
+          "description": "Content-addressed step ID"
+        },
+        "index": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "1-based step order"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200,
+          "description": "Step title"
+        },
+        "spec": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Given/When/Then/Errors specification in plain language"
+        },
+        "inputs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Expected inputs with types (e.g., 'auth_code: string')"
+        },
+        "outputs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Expected outputs with types"
+        },
+        "receipt_summary": {
+          "$ref": "#/$defs/ReceiptSummary",
+          "description": "Aggregated receipt data for this step"
+        }
+      }
+    },
+    "ReceiptSummary": {
+      "type": "object",
+      "required": ["total_runs", "grade_avg", "last_verified"],
+      "properties": {
+        "total_runs": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Total number of receipts aggregated"
+        },
+        "grade_avg": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "description": "Exponential moving average of grades"
+        },
+        "grade_p10": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "description": "10th percentile grade (optional)"
+        },
+        "last_verified": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp of most recent receipt"
+        }
+      }
+    }
+  }
+}

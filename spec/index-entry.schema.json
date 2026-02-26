@@ -1,0 +1,76 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://rr-system.dev/schemas/index-entry.json",
+  "title": "IndexEntry",
+  "description": "Lightweight registry index entry pointing to full recipe content",
+  "type": "object",
+  "required": ["recipe_id", "title", "tags", "embedding_ref", "content_ref", "step_count", "updated_at"],
+  "properties": {
+    "recipe_id": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$",
+      "description": "Recipe ID (content hash)"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200,
+      "description": "Recipe title for quick display"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z0-9-]+$"
+      },
+      "minItems": 1,
+      "uniqueItems": true,
+      "description": "Searchable tags"
+    },
+    "embedding_ref": {
+      "type": "string",
+      "pattern": "^(ipfs://|sha256:)",
+      "description": "Reference to stored embedding vector"
+    },
+    "content_ref": {
+      "type": "string",
+      "pattern": "^(ipfs://|sha256:)",
+      "description": "Reference to full recipe content"
+    },
+    "receipt_summary": {
+      "type": "object",
+      "required": ["total_runs", "grade_avg", "last_verified"],
+      "properties": {
+        "total_runs": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "grade_avg": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0
+        },
+        "grade_p10": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0
+        },
+        "last_verified": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "step_count": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Number of steps in this recipe"
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Last update timestamp"
+    }
+  },
+  "additionalProperties": false
+}

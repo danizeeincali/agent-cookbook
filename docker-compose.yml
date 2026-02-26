@@ -1,0 +1,91 @@
+version: '3.8'
+
+services:
+  # Node 1 - Primary node
+  node-1:
+    build: .
+    container_name: rr-node-1
+    ports:
+      - "3001:3000"
+    environment:
+      - NODE_ID=node-1
+      - PORT=3000
+      - HOST=0.0.0.0
+      - DATA_DIR=/data
+      - CLUSTER_MEMBERS=node-1:3000,node-2:3000,node-3:3000
+      - REPLICATION_FACTOR=3
+      - SYNC_MODE=semi-sync
+      - MIN_REPLICAS=2
+    volumes:
+      - node-1-data:/data
+    networks:
+      - rr-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  # Node 2 - Secondary node
+  node-2:
+    build: .
+    container_name: rr-node-2
+    ports:
+      - "3002:3000"
+    environment:
+      - NODE_ID=node-2
+      - PORT=3000
+      - HOST=0.0.0.0
+      - DATA_DIR=/data
+      - CLUSTER_MEMBERS=node-1:3000,node-2:3000,node-3:3000
+      - REPLICATION_FACTOR=3
+      - SYNC_MODE=semi-sync
+      - MIN_REPLICAS=2
+    volumes:
+      - node-2-data:/data
+    networks:
+      - rr-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    depends_on:
+      - node-1
+
+  # Node 3 - Tertiary node
+  node-3:
+    build: .
+    container_name: rr-node-3
+    ports:
+      - "3003:3000"
+    environment:
+      - NODE_ID=node-3
+      - PORT=3000
+      - HOST=0.0.0.0
+      - DATA_DIR=/data
+      - CLUSTER_MEMBERS=node-1:3000,node-2:3000,node-3:3000
+      - REPLICATION_FACTOR=3
+      - SYNC_MODE=semi-sync
+      - MIN_REPLICAS=2
+    volumes:
+      - node-3-data:/data
+    networks:
+      - rr-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    depends_on:
+      - node-1
+      - node-2
+
+volumes:
+  node-1-data:
+  node-2-data:
+  node-3-data:
+
+networks:
+  rr-network:
+    driver: bridge

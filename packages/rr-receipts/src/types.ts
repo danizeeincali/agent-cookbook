@@ -1,0 +1,34 @@
+/**
+ * Types for receipt system
+ */
+
+export interface GradeComponents {
+  correctness?: number;
+  performance?: number;
+  security_scan?: number;
+  test_coverage?: number;
+}
+
+export interface Receipt {
+  receipt_id: string;
+  target_id: string;
+  target_type: 'step' | 'recipe';
+  grade: number;
+  grade_components?: GradeComponents;
+  agent_signature: string;
+  agent_public_key: string;
+  timestamp: string;
+}
+
+export interface SubmitReceiptInput {
+  target_id: string;
+  target_type: 'step' | 'recipe';
+  grade_components: GradeComponents;
+  agent_signature: string;
+  agent_public_key: string;
+}
+
+export interface ValidationError {
+  field: string;
+  message: string;
+}

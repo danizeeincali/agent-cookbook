@@ -1,0 +1,17 @@
+{
+  "name": "rr-examples",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "submit-recipe": "tsx submit-recipe.ts",
+    "discover": "tsx discover-and-build.ts",
+    "receipt": "tsx generate-receipt.ts"
+  },
+  "dependencies": {
+    "@rr-system/client": "*"
+  },
+  "devDependencies": {
+    "tsx": "^4.7.0"
+  }
+}

@@ -1,0 +1,74 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://rr-system.dev/schemas/receipt.json",
+  "title": "Receipt",
+  "description": "Cryptographic attestation that a recipe or step was successfully executed",
+  "type": "object",
+  "required": ["receipt_id", "target_id", "target_type", "grade", "agent_signature", "timestamp"],
+  "properties": {
+    "receipt_id": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$",
+      "description": "Content-addressed receipt ID"
+    },
+    "target_id": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$",
+      "description": "ID of recipe or step this receipt attests to"
+    },
+    "target_type": {
+      "type": "string",
+      "enum": ["step", "recipe"],
+      "description": "Whether this attests to a step or full recipe"
+    },
+    "grade": {
+      "type": "number",
+      "minimum": 0.0,
+      "maximum": 1.0,
+      "description": "Overall quality grade (0.0-1.0)"
+    },
+    "grade_components": {
+      "type": "object",
+      "properties": {
+        "correctness": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0
+        },
+        "performance": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0
+        },
+        "security_scan": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0
+        },
+        "test_coverage": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0
+        }
+      },
+      "additionalProperties": false,
+      "description": "Optional breakdown of grade components"
+    },
+    "agent_signature": {
+      "type": "string",
+      "pattern": "^ed25519:[a-f0-9]+$",
+      "description": "Ed25519 signature proving authenticity"
+    },
+    "agent_public_key": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "Ed25519 public key (32 bytes hex-encoded)"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp when receipt was generated"
+    }
+  },
+  "additionalProperties": false
+}
