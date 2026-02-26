@@ -15,3 +15,6 @@ channel = "stable-25_05"
 [deployment]
 run = ["sh", "-c", "node packages/rr-node/dist/server.js"]
 build = ["sh", "-c", "npm install && npm run build"]
+
+[agent]
+expertMode = true
