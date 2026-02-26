@@ -27,6 +27,7 @@ export interface SubmitReceiptInput {
   grade_components: GradeComponents;
   agent_signature: string;
   agent_public_key: string;
+  timestamp: string;  // Client must send the timestamp they signed
 }
 
 export interface ValidationError {

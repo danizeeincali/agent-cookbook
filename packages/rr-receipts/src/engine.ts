@@ -20,10 +20,20 @@ export class ReceiptEngine {
    * Submit a new receipt
    */
   async submitReceipt(input: SubmitReceiptInput): Promise<Receipt> {
-    // Use the grade sent by client (they signed it with this exact value)
-    // Don't recalculate - floating point precision matters for signatures!
+    // Use the exact values sent by client (they signed with these exact values)
+    // Don't recalculate grade or regenerate timestamp - precision matters for signatures!
     const grade = input.grade;
-    const timestamp = new Date().toISOString();
+    const timestamp = input.timestamp;
+
+    // Validate timestamp is recent (anti-replay protection)
+    const now = new Date();
+    const receiptTime = new Date(timestamp);
+    const timeDiff = Math.abs(now.getTime() - receiptTime.getTime());
+    if (timeDiff > 5 * 60 * 1000) {
+      throw new Error(
+        `Timestamp too old or in future: ${timestamp} (diff: ${timeDiff}ms)`
+      );
+    }
 
     // Validate grade matches components (within floating point tolerance)
     const calculatedGrade = calculateGrade(input.grade_components);
