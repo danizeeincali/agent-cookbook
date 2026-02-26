@@ -20,9 +20,18 @@ export class ReceiptEngine {
    * Submit a new receipt
    */
   async submitReceipt(input: SubmitReceiptInput): Promise<Receipt> {
-    // Calculate grade from components
-    const grade = calculateGrade(input.grade_components);
+    // Use the grade sent by client (they signed it with this exact value)
+    // Don't recalculate - floating point precision matters for signatures!
+    const grade = input.grade;
     const timestamp = new Date().toISOString();
+
+    // Validate grade matches components (within floating point tolerance)
+    const calculatedGrade = calculateGrade(input.grade_components);
+    if (Math.abs(grade - calculatedGrade) > 0.001) {
+      throw new Error(
+        `Grade mismatch: provided ${grade} vs calculated ${calculatedGrade}`
+      );
+    }
 
     // Build receipt object
     const receipt: Receipt = {
