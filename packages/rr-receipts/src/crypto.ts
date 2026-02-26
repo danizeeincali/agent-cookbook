@@ -35,7 +35,7 @@ export async function verifyReceiptSignature(
       : signature;
 
     const message = createReceiptMessage(targetId, grade, timestamp);
-    const isValid = await ed25519.verify(
+    const isValid = await ed25519.verifyAsync(
       hexToBytes(sigHex),
       message,
       hexToBytes(publicKey)
@@ -55,7 +55,7 @@ export async function generateKeyPair(): Promise<{
   publicKey: string;
 }> {
   const privateKey = ed25519.utils.randomPrivateKey();
-  const publicKey = await ed25519.getPublicKey(privateKey);
+  const publicKey = await ed25519.getPublicKeyAsync(privateKey);
 
   return {
     privateKey: bytesToHex(privateKey),
@@ -73,6 +73,6 @@ export async function signReceipt(
   privateKey: string
 ): Promise<string> {
   const message = createReceiptMessage(targetId, grade, timestamp);
-  const signature = await ed25519.sign(message, hexToBytes(privateKey));
+  const signature = await ed25519.signAsync(message, hexToBytes(privateKey));
   return `ed25519:${bytesToHex(signature)}`;
 }
