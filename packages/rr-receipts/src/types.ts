@@ -23,6 +23,7 @@ export interface Receipt {
 export interface SubmitReceiptInput {
   target_id: string;
   target_type: 'step' | 'recipe';
+  grade: number;  // Client must send the grade they signed
   grade_components: GradeComponents;
   agent_signature: string;
   agent_public_key: string;
