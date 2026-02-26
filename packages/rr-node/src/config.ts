@@ -26,7 +26,7 @@ export interface RaftConfig {
 
 export const DEFAULT_CONFIG: NodeConfig = {
   nodeId: process.env.NODE_ID || 'node-1',
-  port: parseInt(process.env.PORT || '3000', 10),
+  port: parseInt(process.env.PORT || '5000', 10),
   host: process.env.HOST || '0.0.0.0',
   dataDir: process.env.DATA_DIR || './data',
   cluster: {
