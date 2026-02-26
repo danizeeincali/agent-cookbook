@@ -19,7 +19,7 @@ export class DiscoveryService {
     let candidateIds: string[];
     if (query.tags && query.tags.length > 0) {
       const entries = await this.store.searchByTags(query.tags);
-      candidateIds = entries.map(e => e.recipe_id);
+      candidateIds = entries.map((e: any) => e.recipe_id);
     } else {
       candidateIds = await this.store.listRecipes();
     }
