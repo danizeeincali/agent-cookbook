@@ -45,6 +45,23 @@ export class RouteHandler {
         await this.getReceiptSummary(req, res, url);
       } else if (method === 'GET' && url.pathname === '/health') {
         this.sendJSON(res, 200, { status: 'ok' });
+      } else if (method === 'GET' && url.pathname === '/') {
+        this.sendJSON(res, 200, {
+          name: 'Agent Cookbook',
+          version: '1.0.0',
+          description: 'The missing infrastructure layer for AI coding agents',
+          endpoints: {
+            'POST /recipes': 'Create a new recipe',
+            'GET /recipes/:id': 'Get recipe by ID',
+            'GET /recipes/:id/steps': 'List recipe steps',
+            'GET /recipes/:id/steps/:step_id': 'Get a specific step',
+            'GET /discover?q=<query>': 'Semantic search for recipes',
+            'GET /discover/step?q=<query>': 'Search for specific steps',
+            'POST /receipts': 'Submit an execution receipt',
+            'GET /receipts/summary/:id': 'Get receipt summary',
+            'GET /health': 'Health check',
+          },
+        });
       } else {
         this.sendJSON(res, 404, { error: 'Not found' });
       }
