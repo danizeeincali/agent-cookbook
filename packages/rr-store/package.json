@@ -1,5 +1,5 @@
 {
-  "name": "@rr-system/store",
+  "name": "@agent-cookbook/store",
   "version": "1.0.0",
   "description": "Recipe storage with vector embeddings for R&R system",
   "type": "module",

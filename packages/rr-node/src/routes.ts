@@ -3,9 +3,9 @@
  */
 
 import { IncomingMessage, ServerResponse } from 'http';
-import { RecipeStore, CreateRecipeInput } from '@rr-system/store';
-import { DiscoveryService } from '@rr-system/discover';
-import { ReceiptEngine, SubmitReceiptInput } from '@rr-system/receipts';
+import { RecipeStore, CreateRecipeInput } from '@agent-cookbook/store';
+import { DiscoveryService } from '@agent-cookbook/discover';
+import { ReceiptEngine, SubmitReceiptInput } from '@agent-cookbook/receipts';
 
 export class RouteHandler {
   constructor(

@@ -2,7 +2,7 @@
  * Grade aggregation using exponential moving average
  */
 
-import { ReceiptSummary } from '@rr-system/store';
+import { ReceiptSummary } from '@agent-cookbook/store';
 
 /**
  * Aggregate new receipt into existing summary using EMA

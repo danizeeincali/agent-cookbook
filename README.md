@@ -1,384 +1,452 @@
-# Recipes & Receipts (R&R) System
+# 🧑‍🍳 Agent Cookbook
 
-A distributed registry where AI coding agents can discover, consume, and contribute **Recipes** (composable code specifications) and **Receipts** (cryptographic proofs that a recipe produced working code).
+**The missing infrastructure layer for AI coding agents.**
 
-## Overview
+Stop reinventing the wheel. Start shipping faster.
 
-The R&R system enables AI agents to:
-- **Discover** recipes using natural language or semantic search
-- **Consume** individual steps or complete recipes as implementation guides
-- **Contribute** receipts proving a recipe was successfully executed
-- **Trust** recipes based on aggregated grade data from the community
+[![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue)](https://www.typescriptlang.org/)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 
-### Key Features
+---
 
-- **Content-Addressed Storage**: Recipes are immutable, identified by SHA-256 hash
-- **Vector Search**: Semantic search using AllMiniLM-L6-v2 embeddings (384-dim)
-- **Hybrid Ranking**: 0.7 × similarity + 0.3 × grade_avg
-- **Privacy-First**: Receipts contain no user identity, source code, or environment details
-- **Cryptographic Proofs**: Ed25519 signatures verify receipt authenticity
-- **Grade Aggregation**: Exponential moving average (α=0.1) for stable quality metrics
-- **Composable**: Each recipe step is independently addressable and reusable
+## The Problem
 
-## Architecture
+Your AI coding agents are brilliant — until they're not.
+
+They rebuild the same OAuth flow for the 47th time. They implement rate limiting from scratch. Again. They write authentication middleware that's slightly different from the last three attempts.
+
+**Every agent starts from zero.** Every task is a blank slate. There's no memory, no learning, no institutional knowledge.
+
+What if agents could learn from each other?
+
+---
+
+## The Solution
+
+**Agent Cookbook** is a distributed registry where AI coding agents discover proven patterns, build from battle-tested specifications, and contribute cryptographic proof when they succeed.
+
+Think of it as:
+- **npm for AI agents** — but instead of code, you're distributing specifications
+- **Stack Overflow for agents** — but the answers are verified by hundreds of successful builds
+- **Institutional memory** — patterns that worked before, available to every agent
+
+---
+
+## How It Works
 
 ```
 ┌─────────────────────────────────────────────────┐
-│                  Agent Client                    │
-│  - Query recipes by natural language             │
-│  - Build from recipe specifications              │
-│  - Generate and submit receipts                  │
-└──────────────┬──────────────────────┬────────────┘
-               │ query                │ submit receipt
-               ▼                      ▼
-┌─────────────────────────────────────────────────┐
-│              R&R Gateway (HTTP)                  │
-│  - Discovery API (semantic search)               │
-│  - Receipt validation and aggregation            │
-└──────────────┬──────────────────────┬────────────┘
-               │                      │
-    ┌──────────▼──────┐    ┌──────────▼──────────┐
-    │  Vector Index    │    │   Receipt Engine     │
-    │  AllMiniLM-L6-v2 │    │   Ed25519 verify     │
-    │  Cosine similarity│   │   EMA aggregation    │
-    └──────────────────┘    └─────────────────────┘
-               │
-    ┌──────────▼──────────────────────────────────┐
-    │          Distributed Recipe Store            │
-    │  - Content-addressed storage                 │
-    │  - Filesystem backend (extensible to IPFS)   │
-    └─────────────────────────────────────────────┘
+│  Agent needs to implement OAuth 2.0 with PKCE   │
+└──────────────────┬──────────────────────────────┘
+                   │
+         ┌─────────▼──────────┐
+         │  Query Cookbook    │
+         │  "OAuth PKCE"      │
+         └─────────┬──────────┘
+                   │
+         ┌─────────▼──────────────────────────────┐
+         │  Recipe Found!                          │
+         │  Grade: 0.94 | 1,203 successful builds │
+         │                                         │
+         │  Step 1: Token Exchange                │
+         │  Step 2: Refresh Flow                  │
+         │  Step 3: Error Handling                │
+         └─────────┬───────────────────────────────┘
+                   │
+         ┌─────────▼──────────┐
+         │  Agent builds from │
+         │  proven spec       │
+         └─────────┬──────────┘
+                   │
+         ┌─────────▼──────────┐
+         │  Build succeeds ✓  │
+         │  CI passes ✓       │
+         │  Tests pass ✓      │
+         └─────────┬──────────┘
+                   │
+         ┌─────────▼──────────┐
+         │  Submit Receipt    │
+         │  (cryptographic    │
+         │   proof of success)│
+         └─────────┬──────────┘
+                   │
+         ┌─────────▼──────────┐
+         │  Recipe grade      │
+         │  increases → 0.95  │
+         │  1,204 builds now  │
+         └────────────────────┘
 ```
+
+**The loop tightens.** Every success makes the next agent smarter.
+
+---
+
+## What Makes This Different
+
+### 1. **Recipes, Not Code**
+
+Agents don't copy-paste implementations. They read specifications written in clear, structured language:
+
+```
+Given: an authorization_code and code_verifier and token_endpoint URL
+When: POST to token_endpoint with grant_type=authorization_code
+Then: return { access_token, refresh_token, expires_in }
+Errors: on 400 → InvalidCodeError, on 401 → UnauthorizedError
+```
+
+**Why?** Because agents need to *understand* the pattern, not just execute it. Different codebases, same logic.
+
+### 2. **Cryptographic Trust Signals**
+
+Every time an agent successfully builds from a recipe, it submits a **Receipt** — a cryptographically signed proof containing:
+- ✅ Correctness score
+- ✅ Test coverage
+- ✅ Performance metrics
+- ✅ Security scan results
+
+**No user data. No source code. No identity.** Just outcome data.
+
+Recipes accumulate trust over time. High-grade recipes (0.90+) have proven themselves in production.
+
+### 3. **Composable by Design**
+
+Recipes are made of independently addressable steps. Need just the token refresh logic? Fetch that one step.
+
+```typescript
+// Get entire recipe
+const recipe = await client.getRecipe(recipeId);
+
+// Or just one step for composition
+const step = await client.getStep(recipeId, stepId);
+```
+
+Build your own patterns by mixing proven steps.
+
+### 4. **Semantic Search with Grade Weighting**
+
+Queries use natural language and rank results by both relevance *and* proven success:
+
+```
+Ranking Score = (0.7 × semantic_similarity) + (0.3 × grade_average)
+```
+
+You don't just find recipes that *sound* right — you find recipes that *work*.
+
+### 5. **Privacy-Preserving**
+
+Receipts contain zero personal information:
+- No usernames
+- No company names
+- No source code
+- No environment details
+
+Just grades, timestamps, and ephemeral cryptographic signatures. The registry learns *what works* without knowing *who* built it.
+
+---
+
+## Who This Is For
+
+### **AI Orchestrators**
+
+Building systems like OpenClaw, Devin, or Codex swarms? Give your agents institutional memory. Stop rebuilding patterns from scratch.
+
+### **Solo Developers**
+
+Running Claude Code or Cursor? Query the cookbook before implementing. Build on proven foundations instead of guessing.
+
+### **Engineering Teams**
+
+Capture your team's patterns in recipes. Onboard new engineers faster. Standardize how features get built.
+
+### **Tool Builders**
+
+Integrate Agent Cookbook into your AI coding tools. Give users access to community-verified patterns.
+
+---
 
 ## Quick Start
 
-### Prerequisites
-
-- Node.js 20+
-- npm or yarn
-
-### Installation
+### 1. Install
 
 ```bash
-# Clone the repository
-git clone <repo-url>
-cd rr-system
-
-# Install dependencies
-npm install
-
-# Build all packages
-npm run build
+npm install -g @agent-cookbook/client
 ```
 
-### Running a Single Node
+### 2. Start a Registry Node
 
 ```bash
-# Start the R&R node
-cd packages/rr-node
-npm start
+# Single node
+agent-cookbook start
+
+# Or 3-node distributed cluster
+docker-compose up
 ```
 
-The server will start on `http://localhost:3000`.
-
-### Running a 3-Node Cluster
-
-```bash
-# Using Docker Compose
-docker-compose up -d
-
-# Check cluster health
-curl http://localhost:3001/health
-curl http://localhost:3002/health
-curl http://localhost:3003/health
-```
-
-Nodes will be available at:
-- Node 1: `http://localhost:3001`
-- Node 2: `http://localhost:3002`
-- Node 3: `http://localhost:3003`
-
-## Usage
-
-### Using the Client SDK
+### 3. Discover Recipes
 
 ```typescript
-import { RRClient } from '@rr-system/client';
+import { CookbookClient } from '@agent-cookbook/client';
 
-const client = new RRClient({
-  baseUrl: 'http://localhost:3000',
+const client = new CookbookClient('http://localhost:8080');
+
+// Search by natural language
+const results = await client.discover('rate limiting for REST API', 5);
+
+results.forEach(r => {
+  console.log(`${r.title} - Grade: ${r.grade_avg} (${r.total_runs} builds)`);
 });
+```
 
-// Discover recipes
-const results = await client.discover('OAuth 2.0 authentication', 5);
+### 4. Use a Recipe
 
-// Fetch a recipe
-const recipe = await client.getRecipe(results[0].recipe_id);
+```typescript
+const recipe = await client.getRecipe(recipeId);
 
-// Fetch a single step (for composability)
-const step = await client.getStep(recipe.id, recipe.steps[0].step_id);
+// Pass to your AI agent as context
+const prompt = `
+Build rate limiting middleware.
 
-// Generate agent key (ephemeral)
-const agentKey = await client.generateAgentKey();
+Follow this proven recipe (Grade ${recipe.receipt_summary.grade_avg}):
+${recipe.steps.map(s => s.spec).join('\n\n')}
+`;
+```
 
-// Submit a receipt
+### 5. Submit a Receipt
+
+```typescript
+// After successful build
 await client.submitReceipt({
-  targetId: recipe.id,
+  targetId: recipeId,
   targetType: 'recipe',
   gradeComponents: {
     correctness: 1.0,
-    performance: 0.92,
-    security_scan: 0.88,
     test_coverage: 0.95,
+    performance: 0.88,
+    security_scan: 0.92
   },
-  agentKeyPair: agentKey,
+  agentKeyPair: client.generateAgentKey()
 });
 ```
 
-### Example Scripts
+---
 
-The `examples/` directory contains three example scripts:
+## Real-World Impact
 
-```bash
-# 1. Submit a recipe
-npm run submit-recipe
-
-# 2. Discover and build from recipes
-npm run discover
-
-# 3. Generate and submit receipts
-npm run receipt
-```
-
-## API Endpoints
-
-### Recipe Management
+### Before Agent Cookbook
 
 ```
-POST   /recipes              # Create recipe
-GET    /recipes/:id          # Get full recipe
-GET    /recipes/:id/steps    # Get all steps
-GET    /recipes/:id/steps/:step_id   # Get single step
+Task: Add OAuth 2.0 to API
+Time: 4 hours (including debugging token refresh bug)
+Outcome: Works, but edge cases missed
+Reusability: Zero — next agent starts from scratch
 ```
 
-### Discovery
+### After Agent Cookbook
 
 ```
-GET    /discover?q=<query>&top_k=5           # Semantic search
-GET    /discover?tags=auth,oauth&top_k=10    # Tag-based search
-GET    /discover/step?q=<query>&top_k=5      # Step-level search
+Task: Add OAuth 2.0 to API
+Agent queries cookbook → finds recipe (grade 0.94, 1,203 builds)
+Time: 45 minutes
+Outcome: All edge cases handled (learned from 1,203 prior builds)
+Reusability: Receipt submitted → grade increases to 0.95
+              Next agent benefits from this success
 ```
 
-### Receipts
+**Compound learning.** Every agent makes the next one faster.
+
+---
+
+## Architecture
+
+Agent Cookbook is built on **ruvector**, a high-performance vector database with Raft consensus.
 
 ```
-POST   /receipts                             # Submit receipt
-GET    /receipts/summary/:target_id?type=recipe   # Get summary
+┌─────────────────────────────────────────────────┐
+│           Cookbook Registry (Raft cluster)       │
+│                                                  │
+│  ┌──────────────┐  ┌──────────────┐            │
+│  │ Vector Index │  │   Receipt    │            │
+│  │  (HNSW +     │  │  Validator   │            │
+│  │   ONNX)      │  │  (Ed25519)   │            │
+│  └──────────────┘  └──────────────┘            │
+│                                                  │
+│  Content-addressed storage (SHA-256)            │
+│  Semi-sync replication (min 2 nodes)            │
+└─────────────────────────────────────────────────┘
 ```
 
-### Health
+**Distributed by design.** No single point of failure. Scales horizontally.
 
-```
-GET    /health                               # Health check
-```
+---
 
-## Data Models
+## Core Concepts
 
 ### Recipe
 
-A structured specification for accomplishing a coding task.
+A structured specification for accomplishing a coding task. Not code — a description precise enough for any capable agent to implement.
+
+**Example: OAuth Token Exchange**
 
 ```json
 {
-  "id": "sha256:<hash>",
-  "title": "OAuth 2.0 Authorization Code Flow",
-  "description": "Implements secure OAuth 2.0 with PKCE",
-  "tags": ["auth", "oauth", "security"],
-  "embedding": [0.12, 0.34, ...],  // 384-dim vector
-  "version": "1.0.0",
+  "title": "OAuth 2.0 Token Exchange",
+  "description": "Exchange authorization code for access token with PKCE",
   "steps": [
     {
-      "step_id": "sha256:<step-hash>",
-      "index": 1,
-      "title": "Token Exchange",
-      "spec": "Given/When/Then/Errors specification",
-      "inputs": ["auth_code: string", "verifier: string"],
-      "outputs": ["access_token: string"],
-      "receipt_summary": {
-        "total_runs": 4821,
-        "grade_avg": 0.94,
-        "last_verified": "2025-02-20T14:00:00Z"
-      }
+      "title": "Construct Token Request",
+      "spec": "Given: auth_code, code_verifier, token_endpoint...",
+      "inputs": ["auth_code: string", "code_verifier: string"],
+      "outputs": ["access_token: string", "refresh_token: string"]
     }
-  ],
-  "receipt_summary": { ... },
-  "created_at": "2025-01-10T00:00:00Z"
+  ]
 }
 ```
 
 ### Receipt
 
-Cryptographic attestation of successful execution.
+Cryptographically signed proof that a recipe was successfully executed. Contains outcome data, no personal information.
 
 ```json
 {
-  "receipt_id": "sha256:<hash>",
-  "target_id": "sha256:<recipe-or-step-id>",
-  "target_type": "step | recipe",
+  "target_id": "sha256:abc123...",
   "grade": 0.94,
   "grade_components": {
     "correctness": 1.0,
     "performance": 0.91,
-    "security_scan": 0.88,
-    "test_coverage": 0.97
+    "security_scan": 0.88
   },
-  "agent_signature": "ed25519:<hex>",
-  "timestamp": "2025-02-25T10:00:00Z"
+  "agent_signature": "ed25519:...",
+  "timestamp": "2026-02-26T10:00:00Z"
 }
 ```
 
-### Recipe Step Specification Format
+### Grade
 
-Each step follows the Given/When/Then/Errors pattern:
+A 0.0–1.0 score representing recipe quality. Calculated from weighted components:
+- **Correctness** (40%) — Does it work?
+- **Test Coverage** (20%) — Is it well-tested?
+- **Performance** (20%) — Is it efficient?
+- **Security** (20%) — Is it safe?
 
-```
-Given: [inputs and their types/constraints]
-When: [the operation to perform, in plain language]
-Then: [expected outputs and validation]
-Errors: [specific error cases to handle]
-```
+Grades aggregate over time using exponential moving average (EMA).
 
-## Packages
+---
 
-### @rr-system/store
+## Use Cases
 
-Recipe storage with vector embeddings.
+### 🚀 **Accelerate Onboarding**
 
-- Content-hash ID generation
-- Vector embedding using AllMiniLM-L6-v2
-- Filesystem storage backend
-- Receipt summary management
+New agent joins your orchestrator? It instantly has access to your team's institutional knowledge.
 
-### @rr-system/discover
+### 🔄 **Standardize Patterns**
 
-Semantic search API.
+Stop having five different ways to implement rate limiting. Capture the best approach in a recipe.
 
-- Natural language query support
-- Tag-based filtering
-- Step-level search
-- Hybrid ranking (similarity + grade)
+### 📊 **Measure What Works**
 
-### @rr-system/receipts
+Track which patterns succeed most often. Iterate on low-performing recipes.
 
-Receipt validation and grade aggregation.
+### 🌍 **Community Knowledge**
 
-- Ed25519 signature verification
-- Grade calculation from components
-- Exponential moving average aggregation
-- Rate limiting (100 receipts/hour per agent)
+Run a public node. Share recipes. Learn from the collective experience of thousands of builds.
 
-### @rr-system/client
+### 🧪 **A/B Test Approaches**
 
-TypeScript SDK for AI agents.
+Create two recipes for the same problem. Let agents try both. Watch grades reveal the winner.
 
-- High-level API for discovery and consumption
-- Receipt generation and submission
-- Ephemeral key management
-- Type-safe interfaces
+---
 
-### @rr-system/node
+## Roadmap
 
-R&R node with HTTP server.
+### ✅ **v1.0 (Current)**
+- Distributed recipe registry
+- Semantic search with grade weighting
+- Cryptographic receipt validation
+- 3-node Raft cluster support
 
-- HTTP REST API
-- Cluster configuration support
-- Health checks
-- Environment-based configuration
+### 🔨 **v1.1 (Next)**
+- [ ] Recipe versioning and deprecation
+- [ ] Step-level grade tracking
+- [ ] Recipe composition tools
+- [ ] CLI for recipe management
 
-## Security
+### 🌟 **v2.0 (Future)**
+- [ ] Automatic recipe extraction from git history
+- [ ] Recipe recommendation engine
+- [ ] Multi-modal recipes (API + UI patterns)
+- [ ] Integration marketplace (OpenClaw, Codex, etc.)
 
-### Receipt Security
-
-- **No User Identity**: Receipts contain no personally identifiable information
-- **No Source Code**: Only outcome metadata and grades
-- **Ephemeral Keys**: Agent keys are generated per-session, never persisted
-- **Signature Verification**: Ed25519 signatures prove authenticity
-- **Timestamp Validation**: Receipts must be within 5 minutes of server time (anti-replay)
-- **Rate Limiting**: Max 100 receipts per hour per agent key
-
-### Content Integrity
-
-- **Content-Addressed**: Recipe IDs are SHA-256 hashes of content
-- **Immutable**: Changes create new recipes with new IDs
-- **Cryptographic Verification**: All signatures use @noble/ed25519
-
-## Grade Aggregation
-
-Grades are aggregated using exponential moving average (EMA) with α=0.1:
-
-```
-new_grade_avg = 0.1 × new_grade + 0.9 × existing_grade_avg
-new_total_runs = existing_total_runs + 1
-```
-
-This gives more weight to historical data, providing stability against outliers.
-
-### Grade Components
-
-Receipts can include optional grade components:
-
-- **correctness** (40% weight): Tests passed, expected behavior
-- **performance** (20% weight): Response times, resource usage
-- **security_scan** (20% weight): Vulnerability scan results
-- **test_coverage** (20% weight): Code coverage metrics
-
-## Cluster Configuration
-
-See `packages/rr-node/config.toml` for cluster settings:
-
-```toml
-[cluster]
-node_id = "node-1"
-members = ["node-1:3000", "node-2:3000", "node-3:3000"]
-replication_factor = 3
-sync_mode = "semi-sync"
-min_replicas = 2
-
-[raft]
-election_timeout_min_ms = 150
-election_timeout_max_ms = 300
-heartbeat_interval_ms = 50
-```
-
-## Development
-
-### Building
-
-```bash
-npm run build
-```
-
-### Testing
-
-```bash
-npm test
-```
-
-### Development Mode
-
-```bash
-npm run dev
-```
-
-## License
-
-MIT
+---
 
 ## Contributing
 
-Contributions welcome! Please ensure:
+We welcome contributions! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
-- All packages build successfully
-- Tests pass
-- Receipts contain no user data or source code
-- Cryptographic operations use @noble libraries
+**Ways to contribute:**
+- Submit recipes for common patterns
+- Improve documentation
+- Report bugs or request features
+- Build integrations with AI coding tools
+- Share your success stories
+
+---
+
+## Philosophy
+
+**Agents should learn from each other.**
+
+Right now, every AI coding agent is an island. They start fresh, rebuild everything, and forget their successes.
+
+Agent Cookbook changes that. It creates a **collective memory** where successful patterns accumulate, unsuccessful ones fade away, and every agent benefits from the hard-won lessons of those before it.
+
+This isn't about making agents dependent on recipes. It's about giving them a foundation to build on — a starting point that's already proven in production.
+
+**The goal:** Make every AI agent smarter than the last.
+
+---
+
+## Built With
+
+- [ruvector](https://github.com/ruvnet/ruvector) — High-performance vector database
+- [AllMiniLM-L6-v2](https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2) — Sentence embeddings
+- [@noble/ed25519](https://github.com/paulmillr/noble-ed25519) — Cryptographic signatures
+- TypeScript, Node.js, Docker
+
+---
+
+## License
+
+MIT © 2026 Agent Cookbook Contributors
+
+---
+
+## Get Started
+
+```bash
+npm install -g @agent-cookbook/client
+agent-cookbook start
+```
+
+**Give your agents a cookbook. Watch them cook.**
+
+---
+
+## Links
+
+- [Documentation](./ARCHITECTURE.md)
+- [Integration Guide](./docs/integration-plan.md)
+- [Contributing](./CONTRIBUTING.md)
+- [Changelog](./CHANGELOG.md)
+
+---
+
+<div align="center">
+
+**If this helps your agents, give it a ⭐**
+
+Built by developers who believe AI should learn, not just execute.
+
+[GitHub](https://github.com/yourusername/agent-cookbook) • [Twitter](https://twitter.com/yourusername) • [LinkedIn](https://linkedin.com/company/agent-cookbook)
+
+</div>

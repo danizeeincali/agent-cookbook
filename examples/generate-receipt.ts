@@ -2,7 +2,7 @@
  * Example: Generate and submit a receipt after building from a recipe
  */
 
-import { RRClient } from '@rr-system/client';
+import { RRClient } from '@agent-cookbook/client';
 
 async function main() {
   const client = new RRClient({

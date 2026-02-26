@@ -1,5 +1,5 @@
 /**
- * @rr-system/receipts - Receipt validation and grade aggregation
+ * @agent-cookbook/receipts - Receipt validation and grade aggregation
  */
 
 export { ReceiptEngine } from './engine.js';

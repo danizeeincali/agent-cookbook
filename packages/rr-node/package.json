@@ -1,5 +1,5 @@
 {
-  "name": "@rr-system/node",
+  "name": "@agent-cookbook/node",
   "version": "1.0.0",
   "description": "R&R Node with HTTP server and cluster configuration",
   "type": "module",
@@ -21,9 +21,9 @@
     "test": "node --test"
   },
   "dependencies": {
-    "@rr-system/store": "*",
-    "@rr-system/discover": "*",
-    "@rr-system/receipts": "*"
+    "@agent-cookbook/store": "*",
+    "@agent-cookbook/discover": "*",
+    "@agent-cookbook/receipts": "*"
   },
   "devDependencies": {
     "@types/node": "^20.10.0",

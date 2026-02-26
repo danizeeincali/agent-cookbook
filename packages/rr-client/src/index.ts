@@ -1,5 +1,5 @@
 /**
- * @rr-system/client - TypeScript SDK for AI agents
+ * @agent-cookbook/client - TypeScript SDK for AI agents
  */
 
 export { RRClient } from './client.js';

@@ -4,9 +4,9 @@
  */
 
 import { createServer } from 'http';
-import { RecipeStore, FilesystemStorage } from '@rr-system/store';
-import { DiscoveryService } from '@rr-system/discover';
-import { ReceiptEngine } from '@rr-system/receipts';
+import { RecipeStore, FilesystemStorage } from '@agent-cookbook/store';
+import { DiscoveryService } from '@agent-cookbook/discover';
+import { ReceiptEngine } from '@agent-cookbook/receipts';
 import { RouteHandler } from './routes.js';
 import { loadConfig } from './config.js';
 

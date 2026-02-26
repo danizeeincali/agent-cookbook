@@ -2,12 +2,12 @@
  * Receipt engine - accepts and processes receipt submissions
  */
 
-import { RecipeStore } from '@rr-system/store';
+import { RecipeStore } from '@agent-cookbook/store';
 import { Receipt, SubmitReceiptInput } from './types.js';
 import { validateReceiptStructure, validateReceiptSignature, calculateGrade } from './validation.js';
 import { aggregateReceipt } from './aggregation.js';
 import { RateLimiter } from './rate-limit.js';
-import { contentHash } from '@rr-system/store';
+import { contentHash } from '@agent-cookbook/store';
 
 export class ReceiptEngine {
   private rateLimiter: RateLimiter;

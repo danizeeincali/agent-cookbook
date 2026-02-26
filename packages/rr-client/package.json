@@ -1,5 +1,5 @@
 {
-  "name": "@rr-system/client",
+  "name": "@agent-cookbook/client",
   "version": "1.0.0",
   "description": "TypeScript SDK for AI agents to interact with R&R system",
   "type": "module",

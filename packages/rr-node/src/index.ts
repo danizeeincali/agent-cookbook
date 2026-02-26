@@ -1,5 +1,5 @@
 /**
- * @rr-system/node - R&R Node with cluster configuration
+ * @agent-cookbook/node - R&R Node with cluster configuration
  */
 
 export { RouteHandler } from './routes.js';

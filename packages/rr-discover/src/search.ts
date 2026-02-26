@@ -2,7 +2,7 @@
  * Semantic search implementation
  */
 
-import { RecipeStore, generateEmbedding, cosineSimilarity } from '@rr-system/store';
+import { RecipeStore, generateEmbedding, cosineSimilarity } from '@agent-cookbook/store';
 import { SearchResult, SearchQuery, StepSearchResult } from './types.js';
 
 export class DiscoveryService {

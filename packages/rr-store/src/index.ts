@@ -1,5 +1,5 @@
 /**
- * @rr-system/store - Recipe storage with vector embeddings
+ * @agent-cookbook/store - Recipe storage with vector embeddings
  */
 
 export { RecipeStore } from './store.js';

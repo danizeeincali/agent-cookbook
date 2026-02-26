@@ -2,7 +2,7 @@
  * Example: Discover recipes and use them to build code
  */
 
-import { RRClient } from '@rr-system/client';
+import { RRClient } from '@agent-cookbook/client';
 
 async function main() {
   const client = new RRClient({
