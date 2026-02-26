@@ -4,7 +4,15 @@
 
 import * as ed25519 from '@noble/ed25519';
 import { sha256 } from '@noble/hashes/sha256';
+import { sha512 } from '@noble/hashes/sha512';
 import { bytesToHex, hexToBytes } from '@noble/hashes/utils';
+
+// Set up SHA-512 for @noble/ed25519 in Node.js
+// This is required for ed25519 to work properly in Node.js environment
+if (ed25519.etc.sha512Sync === undefined) {
+  ed25519.etc.sha512Sync = (...m: Uint8Array[]) => sha512(ed25519.etc.concatBytes!(...m));
+  ed25519.etc.sha512Async = (...m: Uint8Array[]) => Promise.resolve(ed25519.etc.sha512Sync!(...m));
+}
 
 /**
  * Create message to sign for receipt
