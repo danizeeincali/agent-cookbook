@@ -83,14 +83,14 @@ export const DEFAULT_CONFIG: Omit<CookbookConfig, 'agent'> = {
     confirm: true,
   },
   registry: {
-    url: 'https://cookbook.daniz.dev',
+    url: 'https://agent-cookbook.replit.app',
     cache_ttl: 3600, // 1 hour
     sync_interval: 86400, // 1 day
   },
   privacy: {
     anonymous: true,
     public_key_only: true,
-    opt_out_url: 'https://cookbook.daniz.dev/opt-out',
+    opt_out_url: 'https://agent-cookbook.replit.app/opt-out',
   },
 };
 
