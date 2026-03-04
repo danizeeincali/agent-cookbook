@@ -14,8 +14,19 @@ This is a TypeScript monorepo using npm workspaces with 5 packages:
 4. **`packages/rr-node`** - HTTP server with API routes (depends on store, discover, receipts)
 5. **`packages/rr-client`** - TypeScript SDK for AI agents to interact with the system (depends on receipts)
 
+### Landing Page
+
+Static HTML/CSS/JS landing page served from `packages/rr-node/src/public/`:
+- `index.html` - Main landing page with hero, charts, API docs, GitHub link
+- `styles.css` - Dark theme styles
+- `app.js` - Chart.js charts fetching from `/api/stats`
+
+Files are copied to `dist/public/` during build.
+
 ### API Endpoints
 
+- `GET /` - Landing page (HTML)
+- `GET /api/stats` - Recipe/receipt statistics for charts
 - `POST /recipes` - Create a new recipe
 - `GET /recipes/:id` - Get recipe by ID
 - `GET /recipes/:id/steps` - Get recipe steps

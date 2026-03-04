@@ -1,11 +1,23 @@
-/**
- * HTTP route handlers
- */
-
 import { IncomingMessage, ServerResponse } from 'http';
+import { readFile } from 'fs/promises';
+import { join, extname, resolve, normalize } from 'path';
+import { fileURLToPath } from 'url';
 import { RecipeStore, CreateRecipeInput } from '@agent-cookbook/store';
 import { DiscoveryService } from '@agent-cookbook/discover';
 import { ReceiptEngine, SubmitReceiptInput } from '@agent-cookbook/receipts';
+
+const __dirname = fileURLToPath(new URL('.', import.meta.url));
+const PUBLIC_DIR = join(__dirname, 'public');
+
+const MIME_TYPES: Record<string, string> = {
+  '.html': 'text/html',
+  '.css': 'text/css',
+  '.js': 'application/javascript',
+  '.json': 'application/json',
+  '.png': 'image/png',
+  '.svg': 'image/svg+xml',
+  '.ico': 'image/x-icon',
+};
 
 export class RouteHandler {
   constructor(
@@ -19,7 +31,6 @@ export class RouteHandler {
     const method = req.method || 'GET';
 
     try {
-      // CORS headers
       res.setHeader('Access-Control-Allow-Origin', '*');
       res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
       res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -30,7 +41,6 @@ export class RouteHandler {
         return;
       }
 
-      // Route matching
       if (method === 'POST' && url.pathname === '/recipes') {
         await this.createRecipe(req, res);
       } else if (method === 'GET' && url.pathname.startsWith('/recipes/')) {
@@ -45,29 +55,65 @@ export class RouteHandler {
         await this.getReceiptSummary(req, res, url);
       } else if (method === 'GET' && url.pathname === '/health') {
         this.sendJSON(res, 200, { status: 'ok' });
-      } else if (method === 'GET' && url.pathname === '/') {
-        this.sendJSON(res, 200, {
-          name: 'Agent Cookbook',
-          version: '1.0.0',
-          description: 'The missing infrastructure layer for AI coding agents',
-          endpoints: {
-            'POST /recipes': 'Create a new recipe',
-            'GET /recipes/:id': 'Get recipe by ID',
-            'GET /recipes/:id/steps': 'List recipe steps',
-            'GET /recipes/:id/steps/:step_id': 'Get a specific step',
-            'GET /discover?q=<query>': 'Semantic search for recipes',
-            'GET /discover/step?q=<query>': 'Search for specific steps',
-            'POST /receipts': 'Submit an execution receipt',
-            'GET /receipts/summary/:id': 'Get receipt summary',
-            'GET /health': 'Health check',
-          },
-        });
+      } else if (method === 'GET' && url.pathname === '/api/stats') {
+        await this.getStats(req, res);
+      } else if (method === 'GET') {
+        await this.serveStatic(req, res, url);
       } else {
         this.sendJSON(res, 404, { error: 'Not found' });
       }
     } catch (error: any) {
       console.error('Route error:', error);
       this.sendJSON(res, 500, { error: error.message });
+    }
+  }
+
+  private async getStats(_req: IncomingMessage, res: ServerResponse) {
+    const recipeIds = await this.store.listRecipes();
+    const recipeDates: string[] = [];
+
+    for (const id of recipeIds) {
+      const recipe = await this.store.getRecipe(id);
+      if (recipe?.created_at) {
+        recipeDates.push(recipe.created_at.split('T')[0]);
+      }
+    }
+
+    let totalReceipts = 0;
+    for (const id of recipeIds) {
+      const recipe = await this.store.getRecipe(id);
+      if (recipe?.receipt_summary) {
+        totalReceipts += recipe.receipt_summary.total_runs;
+      }
+    }
+
+    this.sendJSON(res, 200, {
+      total_recipes: recipeIds.length,
+      total_receipts: totalReceipts,
+      recipe_dates: recipeDates,
+    });
+  }
+
+  private async serveStatic(_req: IncomingMessage, res: ServerResponse, url: URL) {
+    const requestedPath = url.pathname === '/' ? '/index.html' : decodeURIComponent(url.pathname);
+    const resolvedPublic = resolve(PUBLIC_DIR);
+    const fullPath = resolve(PUBLIC_DIR, normalize('.' + requestedPath));
+
+    if (!fullPath.startsWith(resolvedPublic)) {
+      res.writeHead(403, { 'Content-Type': 'text/plain' });
+      res.end('Forbidden');
+      return;
+    }
+
+    try {
+      const data = await readFile(fullPath);
+      const ext = extname(fullPath);
+      const contentType = MIME_TYPES[ext] || 'application/octet-stream';
+      res.writeHead(200, { 'Content-Type': contentType });
+      res.end(data);
+    } catch {
+      res.writeHead(404, { 'Content-Type': 'text/plain' });
+      res.end('Not found');
     }
   }
 
@@ -83,7 +129,6 @@ export class RouteHandler {
     const recipeId = parts[2];
 
     if (parts.length === 3) {
-      // GET /recipes/:id
       const recipe = await this.store.getRecipe(recipeId);
       if (!recipe) {
         this.sendJSON(res, 404, { error: 'Recipe not found' });
@@ -91,11 +136,9 @@ export class RouteHandler {
       }
       this.sendJSON(res, 200, recipe);
     } else if (parts.length === 4 && parts[3] === 'steps') {
-      // GET /recipes/:id/steps
       const steps = await this.store.getSteps(recipeId);
       this.sendJSON(res, 200, steps);
     } else if (parts.length === 5 && parts[3] === 'steps') {
-      // GET /recipes/:id/steps/:step_id
       const stepId = parts[4];
       const step = await this.store.getStep(recipeId, stepId);
       if (!step) {
