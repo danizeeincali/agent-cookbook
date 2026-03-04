@@ -246,6 +246,62 @@ nav {
   font-variant-numeric: tabular-nums;
 }
 
+.latest-steps {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.latest-step {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.latest-step-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--red);
+  background: rgba(220, 38, 38, 0.1);
+  border-radius: 4px;
+  min-width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.latest-step-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.latest-step-title {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text);
+  margin-bottom: 2px;
+}
+
+.latest-step-spec {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  opacity: 0.7;
+  line-height: 1.4;
+}
+
+.latest-steps-more {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  opacity: 0.5;
+  padding-left: 36px;
+  margin-top: 4px;
+}
+
 .latest-id {
   font-family: 'JetBrains Mono', monospace;
   font-size: 0.75rem;

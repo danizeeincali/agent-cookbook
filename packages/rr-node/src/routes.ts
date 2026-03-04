@@ -110,6 +110,10 @@ export class RouteHandler {
       const recipe = await this.store.getRecipe(id);
       if (recipe && recipe.created_at > latestDate) {
         latestDate = recipe.created_at;
+        const previewSteps = recipe.steps
+          .sort((a, b) => a.index - b.index)
+          .slice(0, 4)
+          .map(s => ({ title: s.title, spec: s.spec }));
         latest = {
           id: recipe.id,
           title: recipe.title,
@@ -117,6 +121,7 @@ export class RouteHandler {
           tags: recipe.tags,
           version: recipe.version,
           step_count: recipe.steps.length,
+          steps_preview: previewSteps,
           created_at: recipe.created_at,
           receipt_summary: recipe.receipt_summary || null,
         };

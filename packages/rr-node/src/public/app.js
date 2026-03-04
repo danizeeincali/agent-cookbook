@@ -60,9 +60,27 @@ function renderLatest(data) {
     ? `<span class="latest-info">Grade: ${(r.receipt_summary.grade_avg * 100).toFixed(0)}% | ${r.receipt_summary.total_runs} builds</span>`
     : `<span class="latest-info">${r.step_count} step${r.step_count !== 1 ? 's' : ''} | v${r.version}</span>`;
 
+  let stepsHtml = '';
+  if (r.steps_preview && r.steps_preview.length > 0) {
+    const stepItems = r.steps_preview.map((s, i) => {
+      const specPreview = s.spec.length > 120 ? s.spec.slice(0, 120) + '...' : s.spec;
+      return `<div class="latest-step">
+        <div class="latest-step-num">${i + 1}</div>
+        <div class="latest-step-content">
+          <div class="latest-step-title">${s.title}</div>
+          <div class="latest-step-spec">${specPreview}</div>
+        </div>
+      </div>`;
+    }).join('');
+    const moreCount = r.step_count - r.steps_preview.length;
+    const more = moreCount > 0 ? `<div class="latest-steps-more">... ${moreCount} more step${moreCount !== 1 ? 's' : ''}</div>` : '';
+    stepsHtml = `<div class="latest-steps">${stepItems}${more}</div>`;
+  }
+
   body.innerHTML = `
     <div class="latest-title">${r.title}</div>
     <div class="latest-desc">${r.description}</div>
+    ${stepsHtml}
     <div class="latest-meta">
       <div class="latest-tags">${tags}</div>
       ${grade}
