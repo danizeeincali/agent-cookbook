@@ -57,6 +57,8 @@ export class RouteHandler {
         this.sendJSON(res, 200, { status: 'ok' });
       } else if (method === 'GET' && url.pathname === '/api/stats') {
         await this.getStats(req, res);
+      } else if (method === 'GET' && url.pathname === '/api/latest') {
+        await this.getLatestRecipe(req, res);
       } else if (method === 'GET') {
         await this.serveStatic(req, res, url);
       } else {
@@ -92,6 +94,36 @@ export class RouteHandler {
       total_receipts: totalReceipts,
       recipe_dates: recipeDates,
     });
+  }
+
+  private async getLatestRecipe(_req: IncomingMessage, res: ServerResponse) {
+    const recipeIds = await this.store.listRecipes();
+    if (recipeIds.length === 0) {
+      this.sendJSON(res, 200, { recipe: null });
+      return;
+    }
+
+    let latest = null;
+    let latestDate = '';
+
+    for (const id of recipeIds) {
+      const recipe = await this.store.getRecipe(id);
+      if (recipe && recipe.created_at > latestDate) {
+        latestDate = recipe.created_at;
+        latest = {
+          id: recipe.id,
+          title: recipe.title,
+          description: recipe.description,
+          tags: recipe.tags,
+          version: recipe.version,
+          step_count: recipe.steps.length,
+          created_at: recipe.created_at,
+          receipt_summary: recipe.receipt_summary || null,
+        };
+      }
+    }
+
+    this.sendJSON(res, 200, { recipe: latest });
   }
 
   private async serveStatic(_req: IncomingMessage, res: ServerResponse, url: URL) {

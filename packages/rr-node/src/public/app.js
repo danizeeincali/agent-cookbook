@@ -10,6 +10,16 @@ async function fetchStats() {
   }
 }
 
+async function fetchLatest() {
+  try {
+    const res = await fetch('/api/latest');
+    if (!res.ok) return null;
+    return await res.json();
+  } catch {
+    return null;
+  }
+}
+
 function generateDateRange(start, end) {
   const dates = [];
   const current = new Date(start);
@@ -23,6 +33,42 @@ function generateDateRange(start, end) {
 function formatDate(d) {
   const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   return `${months[d.getMonth()]} ${d.getDate()}`;
+}
+
+function timeAgo(dateStr) {
+  const date = new Date(dateStr);
+  const now = new Date();
+  const seconds = Math.floor((now - date) / 1000);
+
+  if (seconds < 60) return 'just now';
+  if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
+  if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
+  return `${Math.floor(seconds / 86400)}d ago`;
+}
+
+function renderLatest(data) {
+  const body = document.getElementById('latest-body');
+  const time = document.getElementById('latest-time');
+
+  if (!data || !data.recipe) return;
+
+  const r = data.recipe;
+  time.textContent = timeAgo(r.created_at);
+
+  const tags = r.tags.map(t => `<span class="latest-tag">${t}</span>`).join('');
+  const grade = r.receipt_summary
+    ? `<span class="latest-info">Grade: ${(r.receipt_summary.grade_avg * 100).toFixed(0)}% | ${r.receipt_summary.total_runs} builds</span>`
+    : `<span class="latest-info">${r.step_count} step${r.step_count !== 1 ? 's' : ''} | v${r.version}</span>`;
+
+  body.innerHTML = `
+    <div class="latest-title">${r.title}</div>
+    <div class="latest-desc">${r.description}</div>
+    <div class="latest-meta">
+      <div class="latest-tags">${tags}</div>
+      ${grade}
+    </div>
+    <div class="latest-id">${r.id}</div>
+  `;
 }
 
 function buildCharts(stats) {
@@ -94,8 +140,8 @@ function buildCharts(stats) {
       labels,
       datasets: [{
         data: cumulativeCounts,
-        borderColor: '#6366f1',
-        backgroundColor: 'rgba(99, 102, 241, 0.1)',
+        borderColor: '#dc2626',
+        backgroundColor: 'rgba(220, 38, 38, 0.1)',
         fill: true,
         tension: 0.3,
         pointRadius: 0,
@@ -112,8 +158,8 @@ function buildCharts(stats) {
       labels,
       datasets: [{
         data: dailyCounts,
-        backgroundColor: 'rgba(99, 102, 241, 0.5)',
-        borderColor: '#6366f1',
+        backgroundColor: 'rgba(220, 38, 38, 0.5)',
+        borderColor: '#dc2626',
         borderWidth: 1,
         borderRadius: 3,
       }],
@@ -130,4 +176,7 @@ function copyCode(btn) {
   });
 }
 
-fetchStats().then(buildCharts);
+Promise.all([fetchStats(), fetchLatest()]).then(([stats, latest]) => {
+  buildCharts(stats);
+  renderLatest(latest);
+});
