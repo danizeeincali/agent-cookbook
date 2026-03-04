@@ -85,6 +85,12 @@ nav {
   overflow: hidden;
 }
 
+.hero-title-block {
+  display: inline-block;
+  transform: rotate(-45deg);
+  margin-bottom: 160px;
+}
+
 .hero h1 {
   font-family: 'Black Ops One', cursive;
   font-size: 5rem;
@@ -94,20 +100,17 @@ nav {
   text-transform: uppercase;
   color: #fff;
   text-shadow: 3px 3px 0 rgba(0,0,0,0.5);
-  transform: rotate(-45deg);
-  display: inline-block;
 }
 
 .subtitle {
-  font-family: 'Black Ops One', cursive;
+  font-family: Helvetica, Arial, sans-serif;
   font-size: 1.2rem;
   color: var(--red);
-  margin-top: 20px;
+  margin-top: 12px;
   text-transform: uppercase;
   letter-spacing: 0.1em;
+  font-weight: 700;
   text-shadow: 0 0 20px rgba(220, 38, 38, 0.4);
-  transform: rotate(-45deg);
-  display: inline-block;
 }
 
 .tagline {
