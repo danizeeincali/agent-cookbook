@@ -93,6 +93,8 @@ nav {
   text-transform: uppercase;
   color: #fff;
   text-shadow: 3px 3px 0 rgba(0,0,0,0.5);
+  transform: rotate(-5deg);
+  display: inline-block;
 }
 
 .subtitle {
