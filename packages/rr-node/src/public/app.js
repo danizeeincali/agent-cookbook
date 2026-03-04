@@ -1,4 +1,4 @@
-const LAUNCH_DATE = new Date('2025-03-04');
+const LAUNCH_DATE = new Date('2026-03-01');
 
 async function fetchStats() {
   try {
