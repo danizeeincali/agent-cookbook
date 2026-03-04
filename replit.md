@@ -8,11 +8,23 @@ This is a TypeScript monorepo using npm workspaces with 5 packages:
 
 ### Packages (build order matters)
 
-1. **`packages/rr-store`** - Recipe storage with vector embeddings and filesystem persistence
+1. **`packages/rr-store`** - Recipe storage with vector embeddings, filesystem and PostgreSQL backends
 2. **`packages/rr-receipts`** - Receipt validation, cryptographic signing, and grade aggregation (depends on rr-store)
 3. **`packages/rr-discover`** - Semantic search over stored recipes (depends on rr-store)
-4. **`packages/rr-node`** - HTTP server with API routes (depends on store, discover, receipts)
+4. **`packages/rr-node`** - HTTP server with API routes and landing page (depends on store, discover, receipts)
 5. **`packages/rr-client`** - TypeScript SDK for AI agents to interact with the system (depends on receipts)
+
+### Storage
+
+- **PostgresStorage** (`packages/rr-store/src/pg-storage.ts`) - Production storage using PostgreSQL via `pg` library. Used when `DATABASE_URL` env var is set.
+- **FilesystemStorage** (`packages/rr-store/src/storage.ts`) - Fallback storage using JSON files on disk. Used when no `DATABASE_URL` is available.
+- Both implement the `RecipeStorageBackend` interface from `packages/rr-store/src/types.ts`
+
+### Database Schema
+
+PostgreSQL tables:
+- `recipes` - `id TEXT PK`, `data JSONB`, `created_at TIMESTAMPTZ`
+- `recipe_index` - `recipe_id TEXT PK`, `data JSONB`, `updated_at TIMESTAMPTZ`
 
 ### Landing Page
 
@@ -45,15 +57,17 @@ Files are copied to `dist/public/` during build.
 
 ## Environment Variables
 
+- `DATABASE_URL` - PostgreSQL connection string (uses PG when set, filesystem when not)
 - `PORT` - Server port (default: 5000)
 - `HOST` - Server host (default: 0.0.0.0)
 - `NODE_ID` - Node identifier (default: replit-1)
-- `DATA_DIR` - Data storage directory (default: ./data)
+- `DATA_DIR` - Data storage directory for filesystem fallback (default: ./data)
 - `NODE_ENV` - Environment mode
 
 ## Key Dependencies
 
 - TypeScript 5.x (installed globally for build)
+- `pg` - PostgreSQL client for persistent storage
 - `@noble/ed25519`, `@noble/hashes` - Cryptographic operations
 - `@xenova/transformers` - Vector embeddings for semantic search
 - `better-sqlite3` - Client-side caching (rr-client)
@@ -63,3 +77,4 @@ Files are copied to `dist/public/` during build.
 - Target: Autoscale
 - Build command: `npm install && npm run build`
 - Run command: `node packages/rr-node/dist/server.js`
+- Database: Replit PostgreSQL (DATABASE_URL auto-provided in production)

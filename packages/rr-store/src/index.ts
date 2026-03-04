@@ -4,6 +4,7 @@
 
 export { RecipeStore } from './store.js';
 export { FilesystemStorage } from './storage.js';
+export { PostgresStorage } from './pg-storage.js';
 export { generateEmbedding, generateRecipeEmbedding, cosineSimilarity } from './embeddings.js';
 export { contentHash, hashRecipe, hashStep } from './hash.js';
 export type {

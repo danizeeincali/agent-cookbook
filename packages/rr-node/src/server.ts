@@ -1,10 +1,6 @@
 #!/usr/bin/env node
-/**
- * R&R Node HTTP Server
- */
-
 import { createServer } from 'http';
-import { RecipeStore, FilesystemStorage } from '@agent-cookbook/store';
+import { RecipeStore, FilesystemStorage, PostgresStorage } from '@agent-cookbook/store';
 import { DiscoveryService } from '@agent-cookbook/discover';
 import { ReceiptEngine } from '@agent-cookbook/receipts';
 import { RouteHandler } from './routes.js';
@@ -12,23 +8,28 @@ import { loadConfig } from './config.js';
 
 async function main() {
   const config = loadConfig();
+  const databaseUrl = process.env.DATABASE_URL;
 
   console.log(`Starting R&R Node: ${config.nodeId}`);
-  console.log(`Data directory: ${config.dataDir}`);
 
-  // Initialize storage
-  const storage = new FilesystemStorage(config.dataDir);
+  let storage: FilesystemStorage | PostgresStorage;
+
+  if (databaseUrl) {
+    console.log('Using PostgreSQL storage');
+    storage = new PostgresStorage(databaseUrl);
+  } else {
+    console.log(`Using filesystem storage: ${config.dataDir}`);
+    storage = new FilesystemStorage(config.dataDir);
+  }
+
   await storage.init();
 
-  // Initialize services
   const store = new RecipeStore(storage);
   const discovery = new DiscoveryService(store);
   const receipts = new ReceiptEngine(store);
 
-  // Create route handler
   const routes = new RouteHandler(store, discovery, receipts);
 
-  // Create HTTP server
   const server = createServer((req, res) => {
     routes.handle(req, res).catch(err => {
       console.error('Request error:', err);
@@ -37,7 +38,6 @@ async function main() {
     });
   });
 
-  // Start server
   server.listen(config.port, config.host, () => {
     console.log(`R&R Node listening on http://${config.host}:${config.port}`);
     console.log(`Node ID: ${config.nodeId}`);
@@ -48,10 +48,12 @@ async function main() {
     }
   });
 
-  // Graceful shutdown
   process.on('SIGTERM', () => {
     console.log('Received SIGTERM, shutting down gracefully...');
-    server.close(() => {
+    server.close(async () => {
+      if ('close' in storage) {
+        await (storage as PostgresStorage).close();
+      }
       console.log('Server closed');
       process.exit(0);
     });

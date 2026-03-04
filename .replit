@@ -1,6 +1,6 @@
 run = "npm install && npm run build && node packages/rr-node/dist/server.js"
 entrypoint = "packages/rr-node/src/server.ts"
-modules = ["nodejs-20", "nix"]
+modules = ["nodejs-20", "nix", "postgresql-16"]
 
 [env]
 NODE_ID = "replit-1"
