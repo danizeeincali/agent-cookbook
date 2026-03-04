@@ -80,8 +80,9 @@ nav {
 }
 
 .hero {
-  padding: 160px 0 60px;
+  padding: 200px 0 120px;
   text-align: center;
+  overflow: hidden;
 }
 
 .hero h1 {
@@ -93,7 +94,7 @@ nav {
   text-transform: uppercase;
   color: #fff;
   text-shadow: 3px 3px 0 rgba(0,0,0,0.5);
-  transform: rotate(-5deg);
+  transform: rotate(-45deg);
   display: inline-block;
 }
 
