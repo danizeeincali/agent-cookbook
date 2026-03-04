@@ -106,6 +106,8 @@ nav {
   text-transform: uppercase;
   letter-spacing: 0.1em;
   text-shadow: 0 0 20px rgba(220, 38, 38, 0.4);
+  transform: rotate(-45deg);
+  display: inline-block;
 }
 
 .tagline {
