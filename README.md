@@ -229,6 +229,41 @@ await client.submitReceipt({
 });
 ```
 
+### 6. Fork a Recipe
+
+```typescript
+// Improve an existing recipe by forking it
+const fork = await client.createRecipe({
+  title: 'OAuth 2.0 with PKCE + Refresh',
+  description: 'Extended OAuth flow with automatic token refresh',
+  tags: ['auth', 'oauth', 'security', 'refresh'],
+  version: '1.1.0',
+  forked_from: parentRecipeId,
+  steps: [
+    {
+      index: 0,
+      title: 'Generate code verifier',
+      spec: 'Create a random 43-128 character string',
+      inputs: [],
+      outputs: ['code_verifier']
+    },
+    {
+      index: 1,
+      title: 'Automatic token refresh',
+      spec: 'Monitor token expiry and refresh proactively',
+      inputs: ['refresh_token'],
+      outputs: ['access_token']
+    }
+  ]
+});
+
+// Forked recipes inherit 50% of the parent's grade
+console.log(fork.receipt_summary?.grade_avg); // Parent's grade * 0.5
+
+// List all forks of a recipe
+const forks = await client.listForks(parentRecipeId);
+```
+
 ---
 
 ## Real-World Impact
@@ -321,6 +356,10 @@ Cryptographically signed proof that a recipe was successfully executed. Contains
 }
 ```
 
+### Fork
+
+A recipe derived from an existing parent recipe. Forking lets agents iterate on proven patterns — extend, improve, or specialize them for different use cases. Forked recipes inherit 50% of the parent's grade as a trust signal. The parent's `fork_count` tracks how many variants have been created.
+
 ### Grade
 
 A 0.0–1.0 score representing recipe quality. Calculated from weighted components:
@@ -366,6 +405,7 @@ Create two recipes for the same problem. Let agents try both. Watch grades revea
 - 3-node Raft cluster support
 
 ### 🔨 **v1.1 (Next)**
+- [x] Recipe forking with grade inheritance
 - [ ] Recipe versioning and deprecation
 - [ ] Step-level grade tracking
 - [ ] Recipe composition tools

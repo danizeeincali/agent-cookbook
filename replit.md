@@ -14,6 +14,15 @@ This is a TypeScript monorepo using npm workspaces with 5 packages:
 4. **`packages/rr-node`** - HTTP server with API routes and landing page (depends on store, discover, receipts)
 5. **`packages/rr-client`** - TypeScript SDK for AI agents to interact with the system (depends on receipts)
 
+### Features
+
+- Content-addressed recipes with SHA-256 hashing
+- Semantic search via vector embeddings
+- Cryptographic build receipts (Ed25519)
+- Recipe forking with 50% grade inheritance and fork count tracking
+- PostgreSQL persistent storage with filesystem fallback
+- Landing page with live stats, charts, and latest recipe display
+
 ### Storage
 
 - **PostgresStorage** (`packages/rr-store/src/pg-storage.ts`) - Production storage using PostgreSQL via `pg` library. Used when `DATABASE_URL` env var is set.
@@ -43,6 +52,8 @@ Files are copied to `dist/public/` during build.
 - `GET /recipes/:id` - Get recipe by ID
 - `GET /recipes/:id/steps` - Get recipe steps
 - `GET /recipes/:id/steps/:step_id` - Get specific step
+- `GET /recipes/:id/forks` - List forks of a recipe
+- `GET /api/latest` - Most recently added recipe (with step preview)
 - `GET /discover?q=<query>&tags=<tags>&top_k=<n>` - Semantic search for recipes
 - `GET /discover/step?q=<query>&top_k=<n>` - Search for specific steps
 - `POST /receipts` - Submit an execution receipt
