@@ -172,6 +172,9 @@ export class RouteHandler {
         return;
       }
       this.sendJSON(res, 200, recipe);
+    } else if (parts.length === 4 && parts[3] === 'forks') {
+      const forks = await this.store.listForks(recipeId);
+      this.sendJSON(res, 200, { forks });
     } else if (parts.length === 4 && parts[3] === 'steps') {
       const steps = await this.store.getSteps(recipeId);
       this.sendJSON(res, 200, steps);
