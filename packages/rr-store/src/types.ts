@@ -29,6 +29,8 @@ export interface Recipe {
   steps: RecipeStep[];
   receipt_summary?: ReceiptSummary;
   created_at: string;
+  forked_from?: string;
+  fork_count?: number;
 }
 
 export interface IndexEntry {
@@ -40,6 +42,8 @@ export interface IndexEntry {
   receipt_summary?: ReceiptSummary;
   step_count: number;
   updated_at: string;
+  forked_from?: string;
+  fork_count?: number;
 }
 
 export interface CreateRecipeInput {
@@ -48,6 +52,7 @@ export interface CreateRecipeInput {
   tags: string[];
   version: string;
   steps: Omit<RecipeStep, 'step_id' | 'receipt_summary'>[];
+  forked_from?: string;
 }
 
 export interface RecipeStorageBackend {

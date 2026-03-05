@@ -10,6 +10,8 @@ export interface SearchResult {
   total_runs?: number;
   step_count: number;
   fetch_url: string;
+  forked_from?: string;
+  fork_count?: number;
 }
 
 export interface SearchQuery {

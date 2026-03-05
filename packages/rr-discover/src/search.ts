@@ -38,6 +38,8 @@ export class DiscoveryService {
             total_runs: entry.receipt_summary?.total_runs,
             step_count: entry.step_count,
             fetch_url: `/recipes/${entry.recipe_id}`,
+            forked_from: entry.forked_from,
+            fork_count: entry.fork_count,
           });
         }
       }
@@ -69,6 +71,8 @@ export class DiscoveryService {
         total_runs: recipe.receipt_summary?.total_runs,
         step_count: recipe.steps.length,
         fetch_url: `/recipes/${recipe.id}`,
+        forked_from: recipe.forked_from,
+        fork_count: recipe.fork_count,
       });
     }
 

@@ -11,6 +11,8 @@ export interface Recipe {
   steps: RecipeStep[];
   receipt_summary?: ReceiptSummary;
   created_at: string;
+  forked_from?: string;
+  fork_count?: number;
 }
 
 export interface RecipeStep {
@@ -38,6 +40,8 @@ export interface RecipeResult {
   total_runs?: number;
   step_count: number;
   fetch_url: string;
+  forked_from?: string;
+  fork_count?: number;
 }
 
 export interface Ed25519KeyPair {

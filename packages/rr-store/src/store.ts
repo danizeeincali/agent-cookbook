@@ -10,9 +10,19 @@ export class RecipeStore {
   constructor(private storage: RecipeStorageBackend) {}
 
   /**
-   * Create a new recipe
+   * Create a new recipe (optionally forked from a parent)
    */
   async createRecipe(input: CreateRecipeInput): Promise<Recipe> {
+    // If forking, validate parent exists and get its grade
+    let parentGradeAvg = 0;
+    if (input.forked_from) {
+      const parent = await this.storage.getContent(input.forked_from);
+      if (!parent) {
+        throw new Error(`Parent recipe not found: ${input.forked_from}`);
+      }
+      parentGradeAvg = parent.receipt_summary?.grade_avg || 0;
+    }
+
     // Generate step IDs
     const steps: RecipeStep[] = input.steps.map(step => ({
       ...step,
@@ -45,6 +55,34 @@ export class RecipeStore {
       created_at: new Date().toISOString(),
     };
 
+    // Fork metadata
+    if (input.forked_from) {
+      recipe.forked_from = input.forked_from;
+
+      // Inherit halved parent grade
+      if (parentGradeAvg > 0) {
+        recipe.receipt_summary = {
+          total_runs: 0,
+          grade_avg: Math.round(parentGradeAvg * 0.5 * 100) / 100,
+          last_verified: recipe.created_at,
+        };
+      }
+
+      // Increment parent's fork_count
+      const parent = await this.storage.getContent(input.forked_from);
+      if (parent) {
+        parent.fork_count = (parent.fork_count || 0) + 1;
+        await this.storage.storeContent(input.forked_from, parent);
+
+        // Update parent index
+        const parentIndex = await this.storage.getIndex(input.forked_from);
+        if (parentIndex) {
+          parentIndex.fork_count = parent.fork_count;
+          await this.storage.storeIndex(parentIndex);
+        }
+      }
+    }
+
     // Store full content
     await this.storage.storeContent(recipeId, recipe);
 
@@ -55,8 +93,10 @@ export class RecipeStore {
       tags: recipe.tags,
       embedding_ref: `sha256:${recipeId}`,
       content_ref: `sha256:${recipeId}`,
+      receipt_summary: recipe.receipt_summary,
       step_count: steps.length,
       updated_at: recipe.created_at,
+      forked_from: recipe.forked_from,
     };
 
     await this.storage.storeIndex(indexEntry);
@@ -133,6 +173,23 @@ export class RecipeStore {
       indexEntry.updated_at = new Date().toISOString();
       await this.storage.storeIndex(indexEntry);
     }
+  }
+
+  /**
+   * List all forks of a recipe
+   */
+  async listForks(recipeId: string): Promise<IndexEntry[]> {
+    const allIds = await this.storage.listRecipeIds();
+    const forks: IndexEntry[] = [];
+
+    for (const id of allIds) {
+      const index = await this.storage.getIndex(id);
+      if (index && index.forked_from === recipeId) {
+        forks.push(index);
+      }
+    }
+
+    return forks;
   }
 
   /**

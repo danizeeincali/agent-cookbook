@@ -90,6 +90,16 @@ export class RRClient {
   }
 
   /**
+   * List all forks of a recipe
+   */
+  async listForks(recipeId: string): Promise<RecipeResult[]> {
+    const response = await this.http.get<{ forks: RecipeResult[] }>(
+      `/recipes/${recipeId}/forks`
+    );
+    return response.forks;
+  }
+
+  /**
    * Submit a receipt after building from a recipe
    */
   async submitReceipt(options: SubmitReceiptOptions): Promise<void> {
